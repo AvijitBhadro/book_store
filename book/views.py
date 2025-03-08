@@ -1,15 +1,25 @@
 from django.shortcuts import render,redirect
 from book.forms import BookStoreForm
 from book.models import BookStoreModel
-from django.views.generic import TemplateView,ListView
+from django.views.generic import TemplateView,ListView,DetailView
+from django.views.generic.edit import FormView
 # Create your views here.
 
 
 #function based view
-def home(request):
-    return render(request, 'store_book.html')
+# def home(request):
+#     return render(request, 'store_book.html')
 
-#class based view
+class MyTemplateView(TemplateView):
+    template_name ='home.html'
+    
+    def get_context_data(self,**kwargs):
+        context = super().get_context_data(**kwargs)
+        context = {'title': 'Home Page'}
+        return context
+    
+
+
 def store_book(request):
   if request.method == 'POST':
     book = BookStoreForm(request.POST)
@@ -24,6 +34,10 @@ def store_book(request):
     return render(request, 'store_book.html',{'form':book})
 
 
+
+
+
+
 # def show_books(request):
 #     book = BookStoreModel.objects.all()
 #     for item in book:
@@ -36,11 +50,24 @@ class BookListView(ListView):
     template_name ='show_book.html'
     context_object_name = 'booklist' 
     
-    def get_queryset(self):
-        return BookStoreModel.objects.filter(author_name='Humayun')
+    # def get_queryset(self):
+    #     return BookStoreModel.objects.filter(author_name='Humayun')
     
-    def get_context_data(self, **kwargs):
-       context =  super().get_context_data(**kwargs)
+    # def get_context_data(self, **kwargs):
+    #    context =  super().get_context_data(**kwargs)
+    #    context = {'Rahim':BookStoreModel.objects.all().order_by('author_name') }
+    #    return context
+    
+    ordering = ['-id']  # desecnding ordering
+    
+   
+class BookDetailsView(DetailView):
+    model = BookStoreModel
+    template_name = 'book_details.html'
+    context_object_name = 'item'
+    pk_url_kwarg = 'id'
+    
+    
     
     
 
