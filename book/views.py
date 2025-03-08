@@ -1,8 +1,10 @@
 from django.shortcuts import render,redirect
+from django.http import HttpResponse
 from book.forms import BookStoreForm
 from book.models import BookStoreModel
 from django.views.generic import TemplateView,ListView,DetailView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView,CreateView
+from django.urls import reverse_lazy
 # Create your views here.
 
 
@@ -20,22 +22,31 @@ class MyTemplateView(TemplateView):
     
 
 
-def store_book(request):
-  if request.method == 'POST':
-    book = BookStoreForm(request.POST)
-    if book.is_valid():
-        book.save()
-        print(book.cleaned_data)
-        redirect('show_books')
-    return render(request, 'store_book.html', {'form': book})
+# def store_book(request):
+#   if request.method == 'POST':
+#     book = BookStoreForm(request.POST)
+#     if book.is_valid():
+#         book.save()
+#         print(book.cleaned_data)
+#         redirect('show_books')
+#     return render(request, 'store_book.html', {'form': book})
         
-  else:
-    book = BookStoreForm()
-    return render(request, 'store_book.html',{'form':book})
+#   else:
+#     book = BookStoreForm()
+#     return render(request, 'store_book.html',{'form':book})
 
 
 
-
+class BookFormView(CreateView):
+    model = BookStoreModel
+    template_name = 'store_book.html'
+    form_class = BookStoreForm
+    success_url = reverse_lazy('show_books')
+ 
+    
+    
+    
+    
 
 
 # def show_books(request):
@@ -58,7 +69,7 @@ class BookListView(ListView):
     #    context = {'Rahim':BookStoreModel.objects.all().order_by('author_name') }
     #    return context
     
-    ordering = ['-id']  # desecnding ordering
+    ordering = ['id']  # desecnding ordering
     
    
 class BookDetailsView(DetailView):
